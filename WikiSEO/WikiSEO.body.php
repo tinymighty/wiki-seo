@@ -1,16 +1,16 @@
 <?php
 class WikiSEO{
 	
-	protected static 	$title = '',
-						$title_mode = 'replace',
-						$title_modes = array('title','keywords','description','metakeywords','metadescription'),
-						$meta_keywords = '',
-						$meta_description = '';
+	protected static 	$title = '';
+	protected static 	$title_mode = 'replace';
+	protected static 	$title_modes = array('title','keywords','description','metakeywords','metadescription');
+	protected static 	$meta_keywords = '';
+	protected static 	$meta_description = '';
 	
 	//do not allow this class to be instantiated, it is static
 	private function __construct(){ }
 	
-	static public function init(Parser $wgParser){
+	public static function init(Parser $wgParser){
 		
 		$wgParser->setHook( 'seo', 'WikiSEO::parserTag' );
 		$wgParser->setFunctionHook( 'seo', 'WikiSEO::parserFunction' );
@@ -19,7 +19,7 @@ class WikiSEO{
 	}
 	
 	//parse the <seo> tag
-	public function parserTag( $text, $params = array(), $parser ) {	    
+	public static function parserTag( $text, $params = array(), $parser ) {	    
 	    //ensure at least one of the required parameters has been set, otherwise display an error
 	    if( !self::validateParams($params) ){
 	    	return '<div class="errorbox">' . wfMsgForContent('seo-empty-attr') . '</div>';
@@ -32,7 +32,7 @@ class WikiSEO{
 	   
 	}
 	
-	public function parserFunction( $parser ){
+	public static function parserFunction( $parser ){
 		$args = func_get_args();
 		$args = array_slice($args, 1, count($args) );
 		$params = array();
@@ -53,7 +53,7 @@ class WikiSEO{
 		return '';
 	}
 	
-	protected function validateParams($params){
+	protected static function validateParams($params){
 		//correct params for compatibility with HtmlTitleAndMeta extension
 		if(isset($params['metak'])){
 			$params['keywords'] = $params['metak'];
@@ -69,7 +69,7 @@ class WikiSEO{
 		return false;
 	}
 	
-	protected function processParams($params,$parser){
+	protected static function processParams($params,$parser){
 		if  (isset($params['title'])) {
 			self::$title = $parser->recursiveTagParse($params['title']);
 		}
@@ -90,7 +90,7 @@ class WikiSEO{
 	}
 	
 		
-	public function modifyHTML ( $out ) {
+	public static function modifyHTML ( $out ) {
 		//echo 'lol'; exit;
 		//set title
 		if(!empty(self::$title)){
