@@ -20,15 +20,15 @@ class WikiSEO{
 	
 	//parse the <seo> tag
 	public static function parserTag( $text, $params = array(), $parser ) {	    
-	    //ensure at least one of the required parameters has been set, otherwise display an error
-	    if( !self::validateParams($params) ){
-	    	return '<div class="errorbox">' . wfMsgForContent('seo-empty-attr') . '</div>';
-	    }
+    //ensure at least one of the required parameters has been set, otherwise display an error
+    if( !self::validateParams($params) ){
+    	return '<div class="errorbox">' . wfMsgForContent('seo-empty-attr') . '</div>';
+    }
 	    
-        self::processParams($params,$parser);
+    self::processParams($params,$parser);
  
  		//this tag should not output anything directly here, we use the parameters to modify the title and meta tags later
-        return '';
+    return '';
 	   
 	}
 	
@@ -91,7 +91,6 @@ class WikiSEO{
 	
 		
 	public static function modifyHTML ( $out ) {
-		//echo 'lol'; exit;
 		//set title
 		if(!empty(self::$title)){
 			switch(self::$title_mode){
