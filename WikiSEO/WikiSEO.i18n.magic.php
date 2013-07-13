@@ -1,10 +1,16 @@
 <?php
 /**
- * Internationalization file for magic words.
+ * Internationalisation file for extension WikiSEO (magic words).
+ *
+ * @file
+ * @ingroup Extensions
  */
  
 $magicWords = array();
- 
+
+/** English
+ * @author Andrujhon
+ */
 $magicWords['en'] = array(
-   'seo' => array( 0, 'seo' ),
+	'seo' => array( 0, 'seo' ),
 );
