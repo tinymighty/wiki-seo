@@ -1,4 +1,11 @@
 <?php
+/**
+ * Body file for extension WikiSEO.
+ *
+ * @file
+ * @ingroup Extensions
+ */
+
 class WikiSEO{
 	
 	protected static 	$title = '';
