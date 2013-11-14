@@ -8,11 +8,19 @@
 
 class WikiSEO{
 	
+	//array of valid parameter names
+	protected static 	$valid_params = array('title', 'keywords', 'description', 'title_mode');
+	//valid title modes
+	protected static 	$valid_title_modes = array('prepend', 'append', 'replace');
+	//allow other parameter names... these will be converted internally
+	protected static 	$convert_params = array('metakeywords'=>'keywords', 'metak'=>'keywords', 'metadescription'=>'description', 'metad'=>'description', 'titlemode'=>'title_mode', 'title mode'=>'title_mode');
+	//parameters which should be parsed if possible to allow for the expansion of templates
+	protected static  $parse_params = array('title', 'description', 'keywords');
+
 	protected static 	$title = '';
 	protected static 	$title_mode = 'replace';
-	protected static 	$title_modes = array('title','keywords','description','metakeywords','metadescription');
-	protected static 	$meta_keywords = '';
-	protected static 	$meta_description = '';
+	protected static 	$keywords = '';
+	protected static 	$description = '';
 	
 	//do not allow this class to be instantiated, it is static
 	private function __construct(){ }
@@ -25,78 +33,143 @@ class WikiSEO{
 		return true;
 	}
 	
-	//parse the <seo> tag
-	public static function parserTag( $text, $params = array(), $parser ) {	    
+	/**
+	 * Parse the values input from the <seo> tag extension
+	 * @param String $text The text content of the tag
+	 * @param Array $params The HTML attributes of the tag
+	 * @param Parser $parser The active Parser instance
+	 * @return String The HTML comments of cached attributes
+	 */
+	public static function parserTag( $text, $params = array(), Parser $parser ) {	    
+    
+		$params = self::processParams($params, $parser);
+
     //ensure at least one of the required parameters has been set, otherwise display an error
-    if( !self::validateParams($params) ){
+		if( empty($params) ){
     	return '<div class="errorbox">' . wfMsgForContent('seo-empty-attr') . '</div>';
     }
-	    
-    self::processParams($params,$parser);
+	  
+	  //render the tags
+    $html = self::renderParamsAsHtmlComments( $params );
  
- 		//this tag should not output anything directly here, we use the parameters to modify the title and meta tags later
-    return '';
+    return $cached;
 	   
 	}
 	
-	public static function parserFunction( $parser ){
+	/**
+	 * Parse the values input from the {{#seo}} parser function
+	 * @param Parser $parser The active Parser instance
+	 * @return Array Parser options and the HTML comments of cached attributes
+	 */
+	public static function parserFunction(Parser $parser ){
 		$args = func_get_args();
 		$args = array_slice($args, 1, count($args) );
 		$params = array();
 		foreach($args as $a){
 			if(strpos($a, '=')){
 				$exploded = explode('=', $a);
-				$params[$exploded[0]] = $exploded[1];
+				$params[trim($exploded[0])] = trim($exploded[1]);
 			}
 		}
+
+		$params = self::processParams($params, $parser);
 		
-		
-		if( !self::validateParams($params) ){
+		if( empty($params) ){
 			return '<div class="errorbox">' . wfMsgForContent('seo-empty-attr') . '</div>';
 		}
+
+
+		$html = self::renderParamsAsHtmlComments( $params );
 		
-		self::processParams($params,$parser);
-		
-		return '';
+		return array( $html, 'noparse' => true, 'isHTML' => true );
 	}
-	
-	protected static function validateParams($params){
-		//correct params for compatibility with HtmlTitleAndMeta extension
-		if(isset($params['metak'])){
-			$params['keywords'] = $params['metak'];
-			unset($params['metak']);
+
+	/**
+	 * Processes params (assumed valid) and sets them as class properties
+	 * @param Array $params Array of pre-validated params
+	 * @param Parser $parser If passed, the parser will be used to recursively parse all params
+	 * @return Array An array of processed params
+	 */
+	protected static function processParams($params, $parser=null){
+
+		//correct params for compatibility with "HTML Meta and Title" extension
+		foreach(self::$convert_params as $from => $to){
+			if( isset($params[$from]) ){
+				$params[$to] = $params[$from];
+				unset($params[$from]);
+			}
 		}
-		if(isset($params['metad'])){
-			$params['description'] = $params['metad'];
-			unset($params['metad']);
+
+		$processed = array();
+
+		//ensure only valid parameter names are processed
+		foreach(self::$valid_params as $p){
+			if( isset($params[$p]) ){
+				//if the parser has been passed and the param is parsable parse it, else simply assign in 
+				$processed[$p] = ($parser && in_array($p, self::$parse_params)) ? $parser->recursiveTagParse($params[$p]) : $params[$p];
+			}
 		}
-		if(count( array_intersect(array_keys($params),self::$title_modes) )  > 0){
-			return true;
-		}
-		return false;
-	}
-	
-	protected static function processParams($params,$parser){
-		if  (isset($params['title'])) {
-			self::$title = $parser->recursiveTagParse($params['title']);
-		}
-		//check for both metakeywords and metak params
-		if  (isset($params['metakeywords']) || isset($params['keywords'])) {
-			$keywords = isset($params['metakeywords']) ? $params['metakeywords'] : $params['keywords'];
-			self::$meta_keywords = $parser->recursiveTagParse($keywords);
-		}
-		//check for both metadescription and metad params
-		if  (isset($params['metadescription']) || isset($params['description'])) {
-			$description = isset($params['metadescription']) ? $params['metadescription'] : $params['description'];
-			self::$meta_description = $parser->recursiveTagParse($description);
+
+		//set the processed values as class properties
+		foreach($processed as $k => $v){
+			self::${$k} = $v;
 		}
 		
-		if(isset($params['titlemode']) && in_array($params['titlemode'], array('append','prepend','replace')) ){
-			self::$title_mode = $params['titlemode'];
-		}
+		return $processed;
 	}
-	
+
+	/**
+	 * Renders the parameters as HTML comment tags in order to cache them in the Wiki text.
+	 *
+	 * When MediaWiki caches pages it does not cache the contents of the <head> tag, so 
+	 * to propagate the information in cached pages, the information is stored
+	 * as HTML comments in the Wiki text.
+	 *
+	 * @param Array $params Array of params to render into HTML comments
+	 * @return String A HTML string of comments
+	 */
+	protected static function renderParamsAsHtmlComments( $params ){
+		$html = '';
+		foreach($params as $k => $v){
+			$html .= '<!-- WikiSEO:'.$k.';'.base64_encode($v).' -->';
+		}
+		return $html;
+	}
+
+	/**
+	 * Convert the attributed cached as HTML comments back into an attribute array
+	 *
+	 * This method is called by the OutputPageBeforeHTML hook
+	 *
+	 * @param OutputPage $out
+	 * @param String $text 
+	 */
+	public static function loadParamsFromWikitext( $out, $text ) {
+ 
+    # Extract meta keywords
+    if (!preg_match_all(
+        '/<!-- WikiSEO:([a-zA-Z_-]+);([0-9a-zA-Z\\+\\/]+=*) -->/m', 
+        $text, 
+        $matches,
+        PREG_SET_ORDER)
+    ){
+    	return true;
+   	}
+
+   	foreach($matches as $match){
+   		$params[$match[1]] = base64_decode($match[2]);
+   	}
+   	self::processParams($params);
+ 		return true;
+	}	
 		
+	/**
+	 * Modify the HTML to set the relevant tags to the specified values
+	 *
+	 * This method is called by the BeforePageDisplay hook
+	 *
+	 * @param OutputPage $out 
+	 */
 	public static function modifyHTML ( $out ) {
 		//set title
 		if(!empty(self::$title)){
@@ -114,12 +187,12 @@ class WikiSEO{
 			$out->setHTMLTitle($title);
 		}
 		//set meta keywords
-		if(!empty(self::$meta_keywords)){
-			$out->addKeyword(self::$meta_keywords );
+		if(!empty(self::$keywords)){
+			$out->addKeyword(self::$keywords );
 		}
 		//set meta description
-		if(!empty(self::$meta_description)){
-			$out->addMeta( 'description', self::$meta_description );
+		if(!empty(self::$description)){
+			$out->addMeta( 'description', self::$description );
 		}
 		
 	    return true;

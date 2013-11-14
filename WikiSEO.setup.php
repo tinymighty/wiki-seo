@@ -35,5 +35,11 @@ $wgAutoloadClasses['WikiSEO'] = dirname(__FILE__) . '/WikiSEO.body.php';
 $wgExtensionMessagesFiles['WikiSEOMagic'] = dirname( __FILE__ ) . '/WikiSEO.i18n.magic.php';
 $wgExtensionMessagesFiles['WikiSEO'] = dirname( __FILE__ ) . '/WikiSEO.i18n.php';
 
+//init the parser function & tag extension
 $wgHooks['ParserFirstCallInit'][] = 'WikiSEO::init';
+//check the wikitext for cached values
+$wgHooks['OutputPageBeforeHTML'][] = 'WikiSEO::loadParamsFromWikitext';
+//$wgHooks['OutputPageBeforeHTML'][] = 'WikiSEO::modifyHTML';
+
+//set the tags
 $wgHooks['BeforePageDisplay'][] = 'WikiSEO::modifyHTML';
