@@ -144,7 +144,7 @@ class WikiSEO{
 	 * @param OutputPage $out
 	 * @param String $text 
 	 */
-	public static function loadParamsFromWikitext( $out, $text ) {
+	public static function loadParamsFromWikitext( $out, &$text ) {
  
     # Extract meta keywords
     if (!preg_match_all(
@@ -158,6 +158,7 @@ class WikiSEO{
 
    	foreach($matches as $match){
    		$params[$match[1]] = base64_decode($match[2]);
+   		$text = str_replace($match[0], '', $text);
    	}
    	self::processParams($params);
  		return true;
