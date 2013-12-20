@@ -148,7 +148,7 @@ class WikiSEO{
  
     # Extract meta keywords
     if (!preg_match_all(
-        '/<!-- WikiSEO:([a-zA-Z_-]+);([0-9a-zA-Z\\+\\/]+=*) -->/m', 
+        '/<!-- WikiSEO:([a-zA-Z_-]+);([0-9a-zA-Z\\+\\/]+=*) -->\n?/m', 
         $text, 
         $matches,
         PREG_SET_ORDER)
