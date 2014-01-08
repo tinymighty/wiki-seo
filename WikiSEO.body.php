@@ -9,18 +9,37 @@
 class WikiSEO{
 	
 	//array of valid parameter names
-	protected static 	$valid_params = array('title', 'keywords', 'description', 'title_mode');
+	protected static 	$valid_params = array(
+		'title',
+		'title_mode', //append, prepend, replace 
+		'keywords', 
+		'description', 
+		'google-site-verification'
+		);
+
+	protected static $tag_types = array(
+		'title' => 'title',
+		'keywords' => 'meta',
+		'description' => 'meta',
+		'google-site-verification' => 'meta'
+	);
 	//valid title modes
 	protected static 	$valid_title_modes = array('prepend', 'append', 'replace');
 	//allow other parameter names... these will be converted internally
-	protected static 	$convert_params = array('metakeywords'=>'keywords', 'metak'=>'keywords', 'metadescription'=>'description', 'metad'=>'description', 'titlemode'=>'title_mode', 'title mode'=>'title_mode');
+	protected static 	$convert_params = array(
+		'metakeywords'=>'keywords', 
+		'metak'=>'keywords', 
+		'metadescription'=>'description', 
+		'metad'=>'description', 
+		'titlemode'=>'title_mode', 
+		'title mode'=>'title_mode'
+	);
 	//parameters which should be parsed if possible to allow for the expansion of templates
 	protected static  $parse_params = array('title', 'description', 'keywords');
 
 	protected static 	$title = '';
 	protected static 	$title_mode = 'replace';
-	protected static 	$keywords = '';
-	protected static 	$description = '';
+	protected static 	$meta = array();
 	
 	//do not allow this class to be instantiated, it is static
 	private function __construct(){ }
@@ -109,10 +128,15 @@ class WikiSEO{
 				$processed[$p] = ($parser && in_array($p, self::$parse_params)) ? $parser->recursiveTagParse($params[$p]) : $params[$p];
 			}
 		}
-
 		//set the processed values as class properties
 		foreach($processed as $k => $v){
-			self::${$k} = $v;
+			if($k==='title'){
+				self::$title = $v;
+			}
+			else
+			if(self::$tag_types[$k]==='meta'){
+				self::$meta[$k] = $v;
+			}
 		}
 		
 		return $processed;
@@ -187,16 +211,14 @@ class WikiSEO{
 			}
 			$out->setHTMLTitle($title);
 		}
-		//set meta keywords
-		if(!empty(self::$keywords)){
-			$out->addMeta( 'keywords', self::$keywords );
-		}
-		//set meta description
-		if(!empty(self::$description)){
-			$out->addMeta( 'description', self::$description );
+		//set meta tags
+		if(!empty(self::$meta)){
+			foreach(self::$meta as $name => $content){
+				$out->addMeta( $name, $content );
+			}
 		}
 		
-	    return true;
+	  return true;
 	}
 }
 
