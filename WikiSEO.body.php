@@ -189,7 +189,7 @@ class WikiSEO{
 		}
 		//set meta keywords
 		if(!empty(self::$keywords)){
-			$out->addKeyword(self::$keywords );
+			$out->addMeta( 'keywords', self::$keywords );
 		}
 		//set meta description
 		if(!empty(self::$description)){
