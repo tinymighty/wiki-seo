@@ -250,20 +250,20 @@ class WikiSEO{
 		//set meta tags
 		if(!empty(self::$meta)){
 			foreach(self::$meta as $name => $content){
-				$out->addMeta( $name, $content );
+				if ($name == 'description') {
+					$out->addMeta( $name, $content );
+					$out->addMeta( "twitter:description", $content );
+					$out->addHeadItem("og:description", "<meta property=\"og:description\" content=\"$content\" />" . "\n");
+				}
+				else {
+					$out->addMeta( $name, $content );
+				}
+
 			}
 		}
 		//set property tags
 		if(!empty(self::$property)){
 			foreach(self::$property as $property => $content){
-
-				if ($name == 'og:image') {
-					$out->addHeadItem("og:image", "<meta property=\"og:image\" content=\"$content\" />");
-				}
-				else {
-				$out->addMeta( $name, $content );
-				}
-
 				$out->addHeadItem("$property", "<meta property=\"$property\" content=\"$content\" />" . "\n");
 			}
 		}
