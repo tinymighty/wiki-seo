@@ -130,11 +130,15 @@ class WikiSEO{
 		}
 		//set the processed values as class properties
 		foreach($processed as $k => $v){
-			if($k==='title'){
+			if( $k==='title' ){
 				self::$title = $v;
 			}
 			else
-			if(self::$tag_types[$k]==='meta'){
+			if( $k==='title_mode' && in_array($k, self::$valid_title_modes) ){
+				self::$title_mode = $v;
+			}
+			else
+			if( isset(self::$tag_types[$k]) && self::$tag_types[$k]==='meta' ){
 				self::$meta[$k] = $v;
 			}
 		}
