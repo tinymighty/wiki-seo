@@ -174,7 +174,8 @@ class WikiSEO{
 			if( isset(self::$tag_types[$k]) && self::$tag_types[$k]==='meta' ){
 				self::$meta[$k] = $v;
 			}
-			if(self::$tag_types[$k]==='property'){
+			else
+			if( isset(self::$tag_types[$k]) && self::$tag_types[$k]==='property'){
 				self::$property[$k] = $v;
 			}
 		}
