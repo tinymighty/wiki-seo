@@ -12,6 +12,7 @@ class WikiSEO{
 	protected static 	$valid_params = array(
 		'title',
 		'title_mode', //append, prepend, replace
+		'title_separator',
 		'keywords',
 		'description',
 		'google-site-verification',
@@ -69,9 +70,16 @@ class WikiSEO{
 	//parameters which should be parsed if possible to allow for the expansion of templates
 	protected static  $parse_params = array('title', 'description', 'keywords');
 
+	//the value for the html title tag
 	protected static 	$title = '';
+	//prepend, append or replace the new title to the existing title
 	protected static 	$title_mode = 'replace';
+	//the separator to use when using append or prepend modes
+	protected static  $title_separator = ' - ';
+
+	//array of meta name values
 	protected static 	$meta = array();
+	//array of meta property values
 	protected static 	$property = array();
 
 	//do not allow this class to be instantiated, it is static
@@ -157,20 +165,29 @@ class WikiSEO{
 		//ensure only valid parameter names are processed
 		foreach(self::$valid_params as $p){
 			if( isset($params[$p]) ){
-				//if the parser has been passed and the param is parsable parse it, else simply assign in
+				//if the parser has been passed and the param is parsable parse it, else simply assign it
 				$processed[$p] = ($parser && in_array($p, self::$parse_params)) ? $parser->recursiveTagParse($params[$p]) : $params[$p];
 			}
 		}
 		//set the processed values as class properties
 		foreach($processed as $k => $v){
-			if($k==='title'){
+			if( $k==='title' ){
 				self::$title = $v;
 			}
 			else
-			if(self::$tag_types[$k]==='meta'){
+			if( $k==='title_mode' && in_array($v, self::$valid_title_modes) ){
+				self::$title_mode = $v;
+			}
+			else
+			if( $k === 'title_separator'){
+				self::$title_separator = ' '.$v.' ';
+			}
+			else
+			if( isset(self::$tag_types[$k]) && self::$tag_types[$k]==='meta' ){
 				self::$meta[$k] = $v;
 			}
-			if(self::$tag_types[$k]==='property'){
+			else
+			if( isset(self::$tag_types[$k]) && self::$tag_types[$k]==='property'){
 				self::$property[$k] = $v;
 			}
 		}
@@ -236,10 +253,10 @@ class WikiSEO{
 		if(!empty(self::$title)){
 			switch(self::$title_mode){
 				case 'append':
-					$title = $out->getPageTitle() . ' - ' . self::$title;
+					$title = $out->getPageTitle() . self::$title_separator . self::$title;
 					break;
 				case 'prepend':
-					$title = self::$title . ' - ' . $out->getPageTitle();
+					$title = self::$title . self::$title_separator . $out->getPageTitle();
 					break;
 				case 'replace':
 				default:
