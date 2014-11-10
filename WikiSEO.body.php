@@ -112,7 +112,7 @@ class WikiSEO{
 	  //render the tags
     $html = self::renderParamsAsHtmlComments( $params );
 
-    return $cached;
+    return $html;
 
 	}
 
