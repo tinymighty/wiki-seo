@@ -1,7 +1,7 @@
 <?php
 /**
  * WikiSEO extension - Allows per page meta settings (keywords, description) and to change the title.
- * @version 1.1.1 - 2013/12/02 (based on the work of Vladimir Radulovski and Jim Wilson)
+ * @version 1.2.0 - 2014/11/10 (based on the work of Vladimir Radulovski and Jim Wilson)
  *
  * @link https://www.mediawiki.org/wiki/Extension:WikiSEO Documentation
  * @link https://www.mediawiki.org/wiki/Extension_talk:WikiSEO Support
@@ -12,7 +12,7 @@
  * @package MediaWiki
  * @author Andru Vallance (Andrujhon)
  * @copyright (C) 2013 Andru Vallance
- * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
+ * @license https://www.gnu.org/copyleft/gpl.html GNU General Public License 2.0 or later
  */
 
 // Confirm MW environment
@@ -30,7 +30,7 @@ $wgExtensionCredits['parserhook'][] = array(
 		),
 	'url' =>'https://www.mediawiki.org/wiki/Extension:WikiSEO',
 	'descriptionmsg' => 'seo-desc',
-	'version'=>'1.1.1'
+	'version'=>'1.2.0'
 );
 
 $wgAutoloadClasses['WikiSEO'] = dirname(__FILE__) . '/WikiSEO.body.php';
