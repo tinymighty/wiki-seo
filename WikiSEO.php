@@ -20,6 +20,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'This file is a MediaWiki extension and thus not a valid entry point.' );
 }
 
+global $wgExtensionCredits, $wgAutoloadClasses, $wgExtensionMessagesFiles, $wgHooks;
 // Credits
 $wgExtensionCredits['parserhook'][] = array(
 	'path' => __FILE__,
