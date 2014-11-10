@@ -3,7 +3,7 @@
     "description": "A simple MediaWiki extension to give you control over the HTML title and meta tags via a tag or parser function.",
     "require": {
         "php": ">=5.3.0",
-        "mediawiki": ">=1.22"
+        "mediawiki/mediawiki": ">=1.22"
     },
     "autoload": {
         "files": ["WikiSEO.php"]
