@@ -8,7 +8,9 @@ and meta tags via a tag or parser function.
 
 ### Install with Composer
 
-Follow the instructions at https://www.mediawiki.org/wiki/Composer
+Follow the instructions at https://www.mediawiki.org/wiki/Composer. The identifier of this extension is ```tinymighty/wiki-seo```.
+
+Prior to using Composer make sure that you remove the code of the extension as well as its invocation from your "LocalSettings.php" file if you already used it before. Composer will automatically load the extension for your wiki. 
 
 ### Manual installation
 
