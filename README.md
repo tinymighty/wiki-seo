@@ -14,9 +14,9 @@ Prior to using Composer make sure that you remove the code of the extension as w
 
 ### Manual installation
 
-You can get the extension via Git:
+You can get the extension via Git (specifying WikiSEO as the destination directory):
 
-    git clone https://github.com/tinymighty/wiki-seo.git
+    git clone https://github.com/tinymighty/wiki-seo.git WikiSEO
 
 Or [download it as zip archive](https://github.com/tinymighty/wiki-seo/archive/master.zip).
 
