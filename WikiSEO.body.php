@@ -263,6 +263,8 @@ class WikiSEO{
 					$title = self::$title;
 			}
 			$out->setHTMLTitle($title);
+			$out->addMeta( "twitter:title", $title );
+			$out->addHeadItem("og:title", "<meta property=\"og:title\" content=\"$title\" />" . "\n");
 		}
 		//set meta tags
 		if(!empty(self::$meta)){
