@@ -270,7 +270,7 @@ class WikiSEO{
 				if ($name == 'description') {
 					$out->addMeta( $name, $content );
 					$out->addMeta( "twitter:description", $content );
-					$out->addHeadItem("og:description", "<meta property=\"og:description\" content=\"$content\" />" . "\n");
+					$out->addHeadItem("og:description", Html::element( 'meta', array( 'property' => 'og:description', 'content' => $content ) ) . "\n");
 				}
 				else {
 					$out->addMeta( $name, $content );
@@ -281,7 +281,7 @@ class WikiSEO{
 		//set property tags
 		if(!empty(self::$property)){
 			foreach(self::$property as $property => $content){
-				$out->addHeadItem("$property", "<meta property=\"$property\" content=\"$content\" />" . "\n");
+				$out->addHeadItem("$property", Html::element( 'meta', array( 'property' => $property, 'content' => $content ) ) . "\n");
 			}
 		}
 
