@@ -32,5 +32,6 @@
 		"FacebookAdmins": [],
 		"FacebookAppID": "",
 		"AddJSONLD": true
-	}
+	},
+	"manifest_version": 1
 }
