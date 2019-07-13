@@ -336,7 +336,7 @@ class WikiSEO{
 					$out->addMeta( $name, $content );
 					$out->addMeta( "twitter:description", $content );
 					$out->addHeadItem("og:description", Html::element( 'meta', array( 'property' => 'og:description', 'content' => $content ) ));
-					$jsonLD .= '"description":"'.$content.'",';
+					$jsonLD .= '"description":"'.$content.'"';
 				} else {
 					$out->addMeta( $name, $content );
 				}
